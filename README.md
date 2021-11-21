@@ -1,4 +1,4 @@
-# README
+# sysctlchk
 
 ```
 Usage: ./sysctlchk.sh [OPTIONS]...
