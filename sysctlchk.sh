@@ -76,6 +76,11 @@ if [ ! -e "$f" ]; then
     usage
 fi
 
+if [ ! -f "$f" ]; then
+    echo "Input $f is not a file"
+    usage
+fi
+
 log "Loading reference file $f"
 
 if [ $logging -eq 1 ]; then
