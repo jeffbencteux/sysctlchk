@@ -5,6 +5,8 @@
 # This source code is licensed under the GPLv3 license found in the
 # LICENSE file in the root directory of this source tree.
 
+set -eu
+
 usage()
 {
     echo "Usage: $0 [OPTIONS]..."
@@ -67,12 +69,17 @@ log " '..\`''.)(OO  \   /    '..\`''.) /_) |OO  )  |  |   |  |\`-' |/_) |OO  )| 
 log ".-._)   \ |   /  /\_  .-._)   \ ||  |\`-'|   |  |  (|  '---.'||  |\`-'| |  .-.  ||  .   \   "
 log "\       / \`-./  /.__) \       /(_'  '--'\   |  |   |      |(_'  '--'\ |  | |  ||  |\   \  "
 log " \`-----'    \`--'       \`-----'    \`-----'   \`--'   \`------'   \`-----' \`--' \`--'\`--' '--'  "
-log
+log ""
 log ""
 
 
 if [ ! -e "$f" ]; then
     echo "Input file $f does not exists"
+    usage
+fi
+
+if [ ! -f "$f" ]; then
+    echo "Input $f is not a file"
     usage
 fi
 
@@ -99,7 +106,7 @@ while read -r line; do
     fi
 
     refname=$(echo "$line" | cut -d' ' -f1)
-    cur=$(sysctl "$refname")
+    cur=$(sysctl "$refname") || true
 
     if [ "$line" = "$cur" ]; then
 	good=$((good + 1))
