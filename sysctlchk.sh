@@ -13,11 +13,13 @@ usage()
     echo "Check sysctl values against a reference file."
     echo
     echo "Arguments:"
-    echo "  -b print only failed entries"
+    echo "  -b print only failed and not found entries"
+    echo "     specify twice to only show failed entries"
     echo "  -f reference file, format is as the 'sysctl -a' output"
     echo "  -h display this help and exit"
     echo "  -l log file to output to"
     echo "  -v verbose mode"
+    echo "  -y avoid usage of terminal escape sequences"
     exit 0
 }
 
@@ -32,14 +34,18 @@ log()
 
 v=0
 b=0
+color=1
 logging=0
 f="refs/all.conf"
 
-while getopts "bf:hl:v" o; do
+while getopts "bf:hl:vy" o; do
     case "${o}" in
-	b)
-	    b=1
-	    ;;
+        b)
+            b=$(( b + 1 ))
+            ;;
+        y)
+            color=0
+            ;;
         f)
             f=${OPTARG}
             ;;
@@ -94,6 +100,7 @@ log ""
 good=0
 bad=0
 error=0
+notfound=0
 
 while read -r line; do
     # ignoring empty lines
@@ -102,32 +109,55 @@ while read -r line; do
     fi
 
     # ignoring comments
-    if echo "$line" | grep -qE '^#'; then
+    if echo "$line" | grep -q '^#'; then
 	continue
     fi
 
     refname=$(echo "$line" | cut -d' ' -f1)
     retcode=0
-    cur=$(sysctl "$refname") || retcode=$?
+    cur=$(sysctl -e "$refname") || retcode=$?
 
     if [ "$retcode" -ne 0 ]; then
 	error=$((error + 1))
 	continue
     elif [ "$line" = "$cur" ]; then
 	good=$((good + 1))
-	if [ $b -eq 1 ]; then
+	if [ $b -ge 1 ]; then
 	    continue
 	fi
 
-	log "\e[1;32m[+]\e[0m $refname"
+	if [ $color -eq 1 ]; then
+	    log "\e[1;32m[+]\e[0m $refname"
+	else
+	    log "[+] $refname"
+	fi
+    elif [ -z "$cur" ]; then
+	notfound=$((notfound + 1))
+	if [ $b -ge 2 ]; then
+	    continue
+	fi
+
+	if [ $color -eq 1 ]; then
+	    log "\e[1;33m[.]\e[0m $refname"
+	else
+	    log "[.] $refname"
+	fi
     else
 	bad=$((bad + 1))
-	log "\e[1;31m[-]\e[0m $refname"
+	if [ $color -eq 1 ]; then
+	    log "\e[1;31m[-]\e[0m $refname"
+	else
+	    log "[-] $refname"
+	fi
     fi
 
     if [ $v -eq 1 ]; then
 	log "reference: $line"
-	log "current  : $cur"
+	if [ -n "$cur" ]; then
+	    log "current  : $cur"
+	else
+	    log "current  : <not found>"
+	fi
     fi
 done < "$f"
 
@@ -135,5 +165,6 @@ log  ""
 log "Statistics:"
 log "  $good passed"
 log "  $bad failed"
+log "  $notfound not found"
 log "  $error errors"
-log "  $((good + bad)) total"
+log "  $((good + bad + notfound + error)) total"

@@ -5,11 +5,13 @@ Usage: ./sysctlchk.sh [OPTIONS]...
 Check sysctl values against a reference file.
 
 Arguments:
-  -b print only failed entries
+  -b print only failed and not found entries
+     specify twice to only show failed entries
   -f reference file, format is as the 'sysctl -a' output
   -h display this help and exit
   -l log file to output to
   -v verbose mode
+  -y avoid usage of terminal escape sequences
 ```
 
 A simple, POSIX shell script to check sysctl values against a
