@@ -115,10 +115,17 @@ while read -r line; do
 
     refname=$(echo "$line" | cut -d' ' -f1)
     retcode=0
-    cur=$(sysctl -e "$refname") || retcode=$?
+    cur=$(sysctl -e "$refname" 2>&1) || retcode=$?
 
     if [ "$retcode" -ne 0 ]; then
 	error=$((error + 1))
+
+	if [ $color -eq 1 ]; then
+	    log "\e[1;35m[!]\e[0m $refname: $cur"
+	else
+	    log "[!] $refname: $cur"
+	fi
+
 	continue
     elif [ "$line" = "$cur" ]; then
 	good=$((good + 1))
