@@ -54,7 +54,7 @@ Default list, with output log:
 ![example 1](img/1.png "Example 1")
 
 Custom reference file, verbose, only displaying failed checks, with
-ouput log:
+output log:
 
 ```
 ./sysctlchk.sh -l sysctlchk.log -f /some/custom/file.conf -b -v
