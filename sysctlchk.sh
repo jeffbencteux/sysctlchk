@@ -93,6 +93,7 @@ log ""
 
 good=0
 bad=0
+error=0
 
 while read -r line; do
     # ignoring empty lines
@@ -106,9 +107,13 @@ while read -r line; do
     fi
 
     refname=$(echo "$line" | cut -d' ' -f1)
-    cur=$(sysctl "$refname") || true
+    retcode=0
+    cur=$(sysctl "$refname") || retcode=$?
 
-    if [ "$line" = "$cur" ]; then
+    if [ "$retcode" -ne 0 ]; then
+	error=$((error + 1))
+	continue
+    elif [ "$line" = "$cur" ]; then
 	good=$((good + 1))
 	if [ $b -eq 1 ]; then
 	    continue
@@ -130,4 +135,5 @@ log  ""
 log "Statistics:"
 log "  $good passed"
 log "  $bad failed"
+log "  $error errors"
 log "  $((good + bad)) total"
