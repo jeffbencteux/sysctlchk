@@ -39,9 +39,11 @@ permission denied on key" errors.
 
 Sources for the lists - kudos to all of the authors:
 
-* [Kernel documentation](https://www.kernel.org/doc/Documentation/sysctl/)
-* [ANSSI guide for Linux hardening](https://www.kernel.org/doc/Documentation/sysctl/)
+* [Kernel documentation](https://www.kernel.org/doc/Documentation/sysctl/), also [networking](https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt)
+* [ANSSI guide for Linux hardening](https://cyber.gouv.fr/publications/recommandations-de-securite-relatives-un-systeme-gnulinux/)
 * [Arch Linux wiki](https://wiki.archlinux.org/title/Security#Kernel_hardening) and also [here](https://wiki.archlinux.org/title/sysctl#TCP/IP_stack_hardening)
+* [SUSE Security and hardening guide](https://documentation.suse.com/fr-fr/sles/15-SP6/html/SLES-all/cha-sec-sysctl.html)
+* CIS Distribution Independent Linux Benchmark v2.0.0
 
 ## Examples
 
